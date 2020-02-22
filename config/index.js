@@ -66,7 +66,17 @@ const config = {
           namingPattern: 'module', // 转换模式，取值为 global/module
           generateScopedName: '[name]__[local]___[hash:base64:5]'
         }
-      }
+      },
+      // devServer:{
+      //   host:'127.0.0.1',
+      //   port: 63400,
+      //   proxy:{
+      //     '/api':{
+      //       target: 'http://2l89512r05.zicp.vip',
+      //       changerOrigin: true
+      //     }
+      //   }
+      // }
     }
   }
 }

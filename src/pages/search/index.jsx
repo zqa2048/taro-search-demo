@@ -1,9 +1,7 @@
 import Taro, { useState, useEffect } from '@tarojs/taro'
 import { View, Text } from '@tarojs/components'
-import { AtSearchBar } from 'taro-ui'
+import { AtSearchBar, AtList, AtListItem } from 'taro-ui'
 import './index.scss'
-// import { axios } from 'taro-axios'
-import service from '../../utils/service'
 
 const Search = () => {
 
@@ -11,7 +9,7 @@ const Search = () => {
 
   const [key, setKey] = useState('')
   const [num, setNum] = useState(null)
-  // const [data,setData] = useState({})
+  const [data,setData] = useState({})
   const onChange = (e)=>{
     setKey(e)
   }
@@ -26,7 +24,7 @@ const Search = () => {
       'pageNum': num ? num : 1
     }
     Taro.request({
-      url:service,
+      url:`http://2l89512r05.zicp.vip/cloud-service/cross/test`,
       data:dataProps,
       method:'POST',
       mode:'cors',
@@ -60,7 +58,18 @@ const Search = () => {
         onActionClick={onActionClick}
         onClear={(e)=>console.log('清楚',e)}
       />
+      <AtList>
+        {
+          data.code === 0 ? data.result.records.map(
+            item=><AtListItem
+              key={item.id}
+              title={item.text}
+            />
+          ) : null
 
+        }
+
+      </AtList>
 
 
 
