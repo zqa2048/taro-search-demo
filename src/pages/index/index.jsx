@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Text } from '@tarojs/components'
+import { View, Text, Button } from '@tarojs/components'
 import './index.scss'
 
 export default class Index extends Component {
@@ -18,10 +18,14 @@ export default class Index extends Component {
 
   componentDidHide () { }
 
+  goTo(){
+    Taro.navigateTo({url:'/pages/search/index'})
+  }
   render () {
     return (
       <View className='index'>
         <Text>Hello world!</Text>
+        <Button onClick={this.goTo}>搜索</Button>
       </View>
     )
   }
