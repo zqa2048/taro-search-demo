@@ -33,7 +33,7 @@ export default function PageView ()  {
   }
   const onScrollToLower =(e) =>{
     if(key){
-      onActionClick()
+      pullDown()
     }
     console.log(e.detail)
     Taro.showLoading({
@@ -57,8 +57,11 @@ export default function PageView ()  {
     setKey(e)
   }
 
+  const pullDown=()=>{
+    postData()
+    setNum(num+1)
+  }
   const onActionClick=()=>{
-    setNum(0)
     postData()
     console.log('点击时候的 key:',key)
   }
@@ -88,7 +91,7 @@ export default function PageView ()  {
           setData([...data,datas])
           console.log('合并后',data,'num是',num,res.data.result.current)
         }
-        setNum(num+1)
+
       }
 
     })
@@ -118,9 +121,10 @@ export default function PageView ()  {
   //   }
 
     const scrollStyle = {
-      height: '850px'
+      height: '850px',
+      marginBottom: '30px'
     }
-    const scrollTop = 20
+    const scrollTop = 0
     // const Threshold = 20
     const vStyleA = {
       height: '900px'
@@ -128,6 +132,15 @@ export default function PageView ()  {
 
 
     return (
+      <View >
+        <View style='minHeight:100%'></View>
+        <AtSearchBar
+          actionName='搜一下'
+          value={key}
+          onChange={onChange}
+          onActionClick={onActionClick}
+          onClear={()=>setKey('')}
+        />
       <ScrollView
         className='scrollview'
         scrollY
@@ -142,15 +155,7 @@ export default function PageView ()  {
         onScroll={onScroll}
         // onTouchEnd={onTouchEnd}
       >
-        <View style={vStyleA}>
 
-            <AtSearchBar
-              actionName='搜一下'
-              value={key}
-              onChange={onChange}
-              onActionClick={onActionClick}
-              onClear={()=>setKey('')}
-            />
 
            <AtList>
             {
@@ -161,7 +166,8 @@ export default function PageView ()  {
             }
 
             </AtList>
-        </View>
+
       </ScrollView>
+      </View>
     )
 }
