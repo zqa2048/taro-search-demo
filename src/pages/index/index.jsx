@@ -21,11 +21,15 @@ export default class Index extends Component {
   goTo(){
     Taro.navigateTo({url:'/pages/search/index'})
   }
+  goGO(){
+    Taro.navigateTo({url:'/pages/test/index'})
+  }
   render () {
     return (
       <View className='index'>
         <Text>Hello world!</Text>
         <Button onClick={this.goTo}>搜索</Button>
+        <Button onClick={this.goGO}>测试</Button>
       </View>
     )
   }

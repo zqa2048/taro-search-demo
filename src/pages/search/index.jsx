@@ -1,5 +1,5 @@
 import Taro, { useState, useEffect } from '@tarojs/taro'
-import { View, Text } from '@tarojs/components'
+import { View, ScrollView } from '@tarojs/components'
 import { AtSearchBar, AtList, AtListItem } from 'taro-ui'
 import './index.scss'
 
@@ -48,17 +48,43 @@ const Search = () => {
     };
   }, [key])
 
+  const scrollStyle={
+    height: '600px'
+  }
+  const Threshold = 10
+  const scrollTop = 0
+  const onScrollToUpper=(e)=>{
+    console.log(e.detail)
+  }
+  const onScrollToLower=(e)=>{
+    console.log(e.detail)
+  }
+  const onScroll=(e)=>{
+    console.log(e)
+  }
   return (
-    <View className='search'>
-      <Text>Hello world!</Text>
-      <AtSearchBar
-        actionName='搜一下'
-        value={key}
-        onChange={onChange}
-        onActionClick={onActionClick}
-        onClear={(e)=>console.log('清楚',e)}
-      />
-      <AtList>
+    <ScrollView
+      className='scrollView'
+      scrollY
+      scrollWithAnimation
+      scrollTop={scrollTop}
+      style={scrollStyle}
+      lowerThreshold={Threshold}
+      upperThreshold={Threshold}
+      onScrollToUpper={onScrollToUpper}
+      onScrollToLower={onScrollToLower}
+      onScroll={onScroll}
+    >
+      <View>
+        <AtSearchBar
+          actionName='搜一下'
+          value={key}
+          onChange={onChange}
+          onActionClick={onActionClick}
+          onClear={(e)=>console.log('清楚',e)}
+        />
+
+        <AtList style={{height:'700px'}}>
         {
           data.code === 0 ? data.result.records.map(
             item=><AtListItem
@@ -70,10 +96,8 @@ const Search = () => {
         }
 
       </AtList>
-
-
-
-    </View>
+      </View>
+      </ScrollView>
   )
 
 }
