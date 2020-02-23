@@ -1,4 +1,4 @@
-import Taro,{useState, useEffect} from '@tarojs/taro'
+import Taro,{useState, useEffect, usePullDownRefresh, useReachBottom} from '@tarojs/taro'
 import {View, ScrollView, Text} from '@tarojs/components'
 import { AtSearchBar, AtList, AtListItem } from 'taro-ui'
 import './index.scss'
@@ -12,6 +12,43 @@ export default function PageView ()  {
     onReachBottomDistance:100
 
   }
+
+  usePullDownRefresh(()=>{
+    console.log('下拉刷新')
+    clear()
+    Taro.showLoading({
+      title: '刷新中'
+    })
+    setTimeout(() => {
+      Taro.hideLoading()
+      Taro.stopPullDownRefresh()
+    }, 1000);
+
+  })
+  useReachBottom(()=>{
+    console.log('上拉加载，num:',num)
+    if(key){
+      pullDown()
+    }
+    Taro.showLoading({
+      title: '加载中'
+    })
+    setTimeout(() => {
+      Taro.hideLoading()
+    }, 2500);
+  })
+
+  const clear=()=>{
+    setData([])
+    setKey('')
+    setNum(1)
+    setRend([])
+  }
+
+
+
+
+
   const onScrollToUpper = (e) => {
 
     console.log(e.detail)
@@ -19,17 +56,17 @@ export default function PageView ()  {
     setKey('')
     setNum(1)
     setRend([])
-    // Taro.showLoading({
-    //   title: '刷新中'
 
-    // })
-    // setTimeout(() => {
-    //   Taro.hideLoading()
-    // }, 1500);
 
-    Taro.pageScrollTo({
-      scrollTop: -10,
+    Taro.showLoading({
+      title: '刷新中'
     })
+    setTimeout(() => {
+      Taro.hideLoading()
+      Taro.stopPullDownRefresh()
+    }, 1000);
+
+
   }
   const onScrollToLower =(e) =>{
     if(key){
@@ -46,11 +83,11 @@ export default function PageView ()  {
   }
 
   function onScroll(e){
-    console.log(e.detail)
+    console.log(e.detail.scrollTop)
   }
 
   const [key, setKey] = useState('农')
-  const [num, setNum] = useState(0)
+  const [num, setNum] = useState(1)
   const [data,setData] = useState([])
   const [rend, setRend] = useState([])
   const onChange = (e)=>{
@@ -91,7 +128,13 @@ export default function PageView ()  {
           setData([...data,datas])
           console.log('合并后',data,'num是',num,res.data.result.current)
         }
-
+        if(res.data.result.pages +1 < num){
+          Taro.showToast({
+            title: '数据全部加载',
+            icon:'success',
+            duration: 2000
+          })
+        }
       }
 
     })
@@ -107,7 +150,7 @@ export default function PageView ()  {
   useEffect(() => {
     if (data.length >= 1){
       let list = []
-      data.map(it=>it.result.records.map(item=>{console.log(item),list.push(item)}))
+      data.map(it=>it.result.records.map(item=>{list.push(item)}))
       // console.log('list',list)
       setRend(list)
     }
@@ -120,43 +163,22 @@ export default function PageView ()  {
 
   //   }
 
-    const scrollStyle = {
-      height: '850px',
-      marginBottom: '30px'
-    }
-    const scrollTop = 0
-    // const Threshold = 20
+
     const vStyleA = {
-      height: '900px'
+      height: '850px'
     }
 
 
     return (
-      <View >
-        <View style='minHeight:100%'></View>
+      <View style={vStyleA}>
+        {/* <View style='minHeight:100%'></View> */}
         <AtSearchBar
           actionName='搜一下'
           value={key}
           onChange={onChange}
           onActionClick={onActionClick}
-          onClear={()=>setKey('')}
+          onClear={()=>clear()}
         />
-      <ScrollView
-        className='scrollview'
-        scrollY
-        scrollWithAnimation
-        scrollAnchoring
-        scrollTop={scrollTop}
-        style={scrollStyle}
-        lowerThreshold={10}
-        upperThreshold={0}
-        onScrollToUpper={onScrollToUpper}
-        onScrollToLower={onScrollToLower}
-        onScroll={onScroll}
-        // onTouchEnd={onTouchEnd}
-      >
-
-
            <AtList>
             {
              rend.length >= 1 ? rend.map(
@@ -166,8 +188,6 @@ export default function PageView ()  {
             }
 
             </AtList>
-
-      </ScrollView>
-      </View>
+    </View>
     )
 }
