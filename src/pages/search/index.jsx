@@ -1,13 +1,13 @@
 import Taro,{useState, useEffect, usePullDownRefresh, useReachBottom} from '@tarojs/taro'
-import {View, ScrollView, Text} from '@tarojs/components'
-import { AtSearchBar, AtList, AtListItem, AtMessage } from 'taro-ui'
+import { View } from '@tarojs/components'
+import { AtSearchBar, AtList, AtListItem } from 'taro-ui'
 import './index.scss'
 
 export default function PageView ()  {
 
 
   PageView.config={
-    navigationBarTitleText: '测试',
+    navigationBarTitleText: '搜索',
     "enablePullDownRefresh": true,
     onReachBottomDistance:100
 
@@ -55,6 +55,7 @@ export default function PageView ()  {
   const [num, setNum] = useState(1)
   const [data,setData] = useState([])
   const [rend, setRend] = useState([])
+
   const onChange = (e)=>{
     setKey(e)
     setNum(1)

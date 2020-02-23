@@ -1,5 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Text, Button } from '@tarojs/components'
+import { AtButton } from 'taro-ui'
 import './index.scss'
 
 export default class Index extends Component {
@@ -18,18 +19,13 @@ export default class Index extends Component {
 
   componentDidHide () { }
 
-  goTo(){
+  goToSearch(){
     Taro.navigateTo({url:'/pages/search/index'})
-  }
-  goGO(){
-    Taro.navigateTo({url:'/pages/test/index'})
   }
   render () {
     return (
       <View className='index'>
-        <Text>Hello world!</Text>
-        <Button onClick={this.goTo}>搜索</Button>
-        <Button onClick={this.goGO}>测试</Button>
+        <AtButton type='primary' size='normal' onClick={this.goToSearch}>搜索</AtButton>
       </View>
     )
   }
