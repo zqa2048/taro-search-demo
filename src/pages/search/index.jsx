@@ -3,16 +3,23 @@ import { View } from '@tarojs/components'
 import { AtSearchBar, AtList, AtListItem } from 'taro-ui'
 import './index.scss'
 
-export default function PageView ()  {
+export default function SearchPage ()  {
 
-
-  PageView.config={
+  SearchPage.config={
     navigationBarTitleText: '搜索',
-    "enablePullDownRefresh": true,
+    enablePullDownRefresh: true,   // 这个是启用下拉刷新特性
+    backgroundTextStyle: "dark",   // 把显示的文本颜色改成暗色调,亮色的话.你背景不改看不到,因为同色
+    backgroundColor:'#f7f7f7', // 页面的背景色
     onReachBottomDistance:100
-
   }
-  // 下拉刷新
+
+  const [key, setKey] = useState('')    // 监听用户输入
+  const [num, setNum] = useState(1)     // 当前的页面数
+  const [data,setData] = useState([])   // 请求来的原始数据
+  const [rend, setRend] = useState([])  // 将请求来的数据取出需要的
+  let timeEnd = null                  // 防抖定时器
+
+  // 下拉刷新loading
   usePullDownRefresh(()=>{
     console.log('下拉刷新')
     clear()
@@ -23,22 +30,33 @@ export default function PageView ()  {
       Taro.hideLoading()
       Taro.stopPullDownRefresh()
     }, 1000);
-
   })
+
   // 上拉加载更多
   useReachBottom(()=>{
-    console.log('上拉加载，num:',num)
-    if(key && (num > 1)){
-      pullDown()
-      Taro.showLoading({
-      title: '加载中'
+    console.log('上拉加载')
+    ToastLoading('加载中')
+    if(key && num > 1){
+      clearTimeout(timeEnd)
+      timeEnd = setTimeout(() => {
+        pullDown()
+      }, 1600);
+    }else if (!key){
+      ToastLoading('请输入')
+    }else if(num<=1){
+      ToastLoading('请点击按钮')
+    }
     })
-    setTimeout(() => {
-      Taro.hideLoading()
-    }, 2500)
-    }
-    }
-  )
+  // loading
+  const ToastLoading=(text,type = 'loading',date = 1500)=>{
+    Taro.showToast({
+      title: text,
+      icon: type,
+      duration: date,
+      mask: 'true'
+})
+  .then(res => console.log(res))
+  }
 
   // 刷新页面
   const clear=()=>{
@@ -48,14 +66,7 @@ export default function PageView ()  {
     setRend([])
   }
 
-
-
-
-  const [key, setKey] = useState('')
-  const [num, setNum] = useState(1)
-  const [data,setData] = useState([])
-  const [rend, setRend] = useState([])
-
+  // 搜索框文字改变时
   const onChange = (e)=>{
     setKey(e)
     setNum(1)
@@ -63,31 +74,33 @@ export default function PageView ()  {
     setRend([])
   }
 
+  // 下拉后执行的操作
   const pullDown=()=>{
     postData()
     setNum(num+1)
   }
+  // 点击搜索按钮
   const onActionClick=()=>{
+    setNum(1)
     if(key && num == 1){
       postData()
       setNum(num+1)
     }
-
-    console.log('点击时候的 key:',key)
   }
+  // 请求数据
   const postData =()=>{
     let dataProps = {
       'keyword':key,
       'pageNum': num
     }
-    // taro 自带的方法
+    // taro 自带的请求方法
     Taro.request({
       url:`http://2l89512r05.zicp.vip/cloud-service/cross/test`,
       data:dataProps,
       method:'POST',
       mode:'cors',
       dataType:'json',
-      responseType:'raw-JSON',
+      responseType:'raw',
       header:{
         'Content-Type': 'application/json;charset=UTF-8'
       },
@@ -102,52 +115,40 @@ export default function PageView ()  {
           setData([...data,datas])
         }
         if(res.data.result.pages  <= num-1){
-          Taro.showToast({
-            title: '数据全部加载',
-            icon:'success',
-            duration: 1500
-          })
+          ToastLoading('加载完毕','success')
         }
-        console.log('初始化',data,'num是',num,res.data.result.current)
         console.log(rend.length)
       }
-
     })
   }
 
+  // 当请求到数据时,将请求的数据做一次处理,存入数组
   useEffect(() => {
-    console.log(key)
-    return () => {
-
-    };
-  }, [key])
-
-  useEffect(() => {
+    console.log(data.length)
     if (data.length >= 1){
       let list = []
       data.map(it=>it.result.records.map(item=>{list.push(item)}))
       // console.log('list',list)
       setRend(list)
     }
-    console.log('useEffect num',num)
-    return () => {
+  }, [data])
 
-    };
-  }, [data,num])
-
-  // const DataRender=(datas)=>{
-
+  // 判断当前运行环境,
+  // useEffect(() => {
+  //   if(process.env.TARO_ENV === 'h5'){
+  //     console.log('当前是h5')
+  //   }else if(process.env.TARO_ENV === 'weapp'){
+  //     console.log('当前是微信小程序')
   //   }
+  // }, [])
 
-
-    const vStyleA = {
+ const vStyleA = {
       height: '850px'
     }
 
 
     return (
       <View style={vStyleA}>
-        {/* <View style='minHeight:100%'></View> */}
         <AtSearchBar
           actionName='搜一下'
           value={key}
