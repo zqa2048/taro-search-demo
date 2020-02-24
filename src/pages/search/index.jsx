@@ -6,11 +6,11 @@ import './index.scss'
 export default function SearchPage ()  {
 
   SearchPage.config={
-    navigationBarTitleText: '搜索',
-    enablePullDownRefresh: true,   // 这个是启用下拉刷新特性
-    backgroundTextStyle: "dark",   // 把显示的文本颜色改成暗色调,亮色的话.你背景不改看不到,因为同色
-    backgroundColor:'#f7f7f7', // 页面的背景色
-    onReachBottomDistance:100
+    navigationBarTitleText: '搜索',      // 页面标题
+    enablePullDownRefresh: true,        // 这个是启用下拉刷新特性
+    backgroundTextStyle: "dark",        // 把显示的文本颜色改成暗色调,亮色的话.你背景不改看不到,因为同色
+    backgroundColor:'#f7f7f7',          // 页面的背景色
+    onReachBottomDistance:100           // 滑动距离
   }
 
   const [key, setKey] = useState('')    // 监听用户输入
@@ -47,6 +47,7 @@ export default function SearchPage ()  {
       ToastLoading('请点击按钮')
     }
     })
+
   // loading
   const ToastLoading=(text,type = 'loading',date = 1500)=>{
     Taro.showToast({
@@ -54,8 +55,7 @@ export default function SearchPage ()  {
       icon: type,
       duration: date,
       mask: 'true'
-})
-  .then(res => console.log(res))
+    })
   }
 
   // 刷新页面
@@ -100,7 +100,6 @@ export default function SearchPage ()  {
       method:'POST',
       mode:'cors',
       dataType:'json',
-      responseType:'raw',
       header:{
         'Content-Type': 'application/json;charset=UTF-8'
       },
@@ -117,14 +116,12 @@ export default function SearchPage ()  {
         if(res.data.result.pages  <= num-1){
           ToastLoading('加载完毕','success')
         }
-        console.log(rend.length)
       }
     })
   }
 
   // 当请求到数据时,将请求的数据做一次处理,存入数组
   useEffect(() => {
-    console.log(data.length)
     if (data.length >= 1){
       let list = []
       data.map(it=>it.result.records.map(item=>{list.push(item)}))
@@ -133,19 +130,9 @@ export default function SearchPage ()  {
     }
   }, [data])
 
-  // 判断当前运行环境,
-  // useEffect(() => {
-  //   if(process.env.TARO_ENV === 'h5'){
-  //     console.log('当前是h5')
-  //   }else if(process.env.TARO_ENV === 'weapp'){
-  //     console.log('当前是微信小程序')
-  //   }
-  // }, [])
-
  const vStyleA = {
       height: '850px'
     }
-
 
     return (
       <View style={vStyleA}>
@@ -156,16 +143,13 @@ export default function SearchPage ()  {
           onActionClick={onActionClick}
           onClear={clear}
         />
-           <AtList
-             hasBorder
-           >
+           <AtList hasBorder>
             {
              rend.length >= 1 ? rend.map(
                item=><AtListItem key={item.id} title={item.text} />
                )
              : null
             }
-
             </AtList>
     </View>
     )
